@@ -104,3 +104,49 @@ print(result2)
 
 #testing the file
 #print(read_reports('/Users/topherjaynes/Desktop/AdventCode/Day3/input1.txt'))
+
+#is there a way without regex?
+def parse_and_sum_without_regex(file_path):
+    # Step 1: Read the file content
+    with open(file_path, 'r') as file:
+        content = file.read()
+
+    # Step 2: Initialize variables
+    enabled = True
+    total_sum = 0
+    i = 0
+
+    # Step 3: Process the string character by character
+    while i < len(content):
+        if content[i:i+4] == "do()":
+            enabled = True
+            i += 4  # Skip past "do()"
+        elif content[i:i+7] == "don't()":
+            enabled = False
+            i += 7  # Skip past "don't()"
+        elif content[i:i+4] == "mul(":
+            if enabled:
+                # Find the closing parenthesis
+                end_index = content.find(")", i)
+                if end_index != -1:
+                    # Extract the arguments inside "mul(...)"
+                    arguments = content[i+4:end_index]
+                    if "," in arguments:
+                        x, y = arguments.split(",")
+                        # Convert to integers and add to the total sum
+                        total_sum += int(x) * int(y)
+                    i = end_index + 1  # Skip past the closing parenthesis
+                else:
+                    i += 4  # Skip "mul(" if no closing parenthesis found
+            else:
+                # Skip past this mul if disabled
+                i += 4
+        else:
+            # Move to the next character
+            i += 1
+
+    return total_sum
+
+#trying part two without regex
+result = parse_and_sum_without_regex('/Users/topherjaynes/Desktop/AdventCode/Day3/input1.txt')
+print("Total Sum with Conditions (No Regex):", result)
