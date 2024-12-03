@@ -132,9 +132,10 @@ def parse_and_sum_without_regex(file_path):
                     # Extract the arguments inside "mul(...)"
                     arguments = content[i+4:end_index]
                     if "," in arguments:
-                        x, y = arguments.split(",")
-                        # Convert to integers and add to the total sum
-                        total_sum += int(x) * int(y)
+                        parts = arguments.split(",")
+                        if len(parts) == 2 and parts[0].isdigit() and parts[1].isdigit():
+                            x, y = map(int, parts)
+                            total_sum += x * y
                     i = end_index + 1  # Skip past the closing parenthesis
                 else:
                     i += 4  # Skip "mul(" if no closing parenthesis found
