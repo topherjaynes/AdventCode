@@ -66,9 +66,11 @@ def wordsearch(file_path, word):
             #moving across all the cols first
             #check directions from coordinate
             for dx, dy in directions:
-                if check_directions(x, y, dx,dy)
+                if check_directions(x, y, dx,dy):
                     count +=1
     return count
 
-result = wordsearch('/Users/topherjaynes/Desktop/AdventCode/Day4/input4.txt', 'XMAS')
+#result = wordsearch('/Users/topherjaynes/Desktop/AdventCode/Day4/input4.txt', 'XMAS')
+#smaller input, was too low first guess
+result = wordsearch('/Users/topherjaynes/Desktop/AdventCode/Day4/smallinput.txt', 'XMAS')
 print("Total occurrences of XMAS:", result)
