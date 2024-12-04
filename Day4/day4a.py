@@ -52,10 +52,12 @@ def wordsearch(file_path, word):
     #seperated the function to check if word exisits in each directions
     #brute force first and then check to see if the letter we're on is the first of Word
     # if not then move on, no need to check directions
-    def check_directions(x,y,dx,dy):
+    def check_directions(x, y, dx, dy):
         for i in range(word_length):
-            nx, ny = x + 1 * dx,y + i *dy
-            if nx < 0 or nx >= rows or ny < 0 or ny >= cols or grid[nx][ny] != word[i]:
+            nx, ny = x + i * dx, y + i * dy
+            if not (0 <= nx < rows and 0 <= ny < cols):  # Check grid boundaries
+                return False
+            if grid[nx][ny] != word[i]:  # Check if the current character matches
                 return False
         return True
 
@@ -67,6 +69,7 @@ def wordsearch(file_path, word):
             #check directions from coordinate
             for dx, dy in directions:
                 if check_directions(x, y, dx,dy):
+                    print(f"Found XMAS at ({x},{y}) in direction ({dx},{dy})")
                     count +=1
     return count
 
