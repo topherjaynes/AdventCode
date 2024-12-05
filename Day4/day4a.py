@@ -73,7 +73,7 @@ def wordsearch(file_path, word):
                     count +=1
     return count
 
-#result = wordsearch('/Users/topherjaynes/Desktop/AdventCode/Day4/input4.txt', 'XMAS')
+result = wordsearch('/Users/topherjaynes/Desktop/AdventCode/Day4/input4.txt', 'XMAS')
 #smaller input, was too low first guess
-result = wordsearch('/Users/topherjaynes/Desktop/AdventCode/Day4/smallinput.txt', 'XMAS')
+#result = wordsearch('/Users/topherjaynes/Desktop/AdventCode/Day4/smallinput.txt', 'XMAS')
 print("Total occurrences of XMAS:", result)
