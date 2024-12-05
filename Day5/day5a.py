@@ -59,19 +59,18 @@ def parse_input(file_path):
         for line in file:
             line = line.strip()
             
-            # Skip empty lines
             if not line:
                 reading_rules = False
                 continue
                 
-            # Parse based on which section we're in
             if reading_rules and '|' in line:
-                # Process rule line (e.g., "47|53")
                 before, after = line.split('|')
                 rules.append((int(before), int(after)))
             elif not reading_rules and ',' in line:
-                # Process sequence line (e.g., "75,47,61,53,29")
-                sequence = [int(x) for x in line.split(',')]
+                # Convert the sequence to a list of integers
+                sequence = []
+                for num in line.split(','):
+                    sequence.append(int(num.strip()))
                 sequences.append(sequence)
     
     return rules, sequences
@@ -95,6 +94,49 @@ class PrinterDAG:
         for before, after in rules:
             self.add_edge(before, after)
     
+    def is_valid_sequence(self, sequence):
+        # Add debug print
+        print(f"Checking sequence: {sequence}")
+        # Create a position map for quick lookup
+        positions = {num: i for i, num in enumerate(sequence)}
+        
+        for vertex in self.graph:
+            if vertex in positions:
+                for must_come_after in self.graph[vertex]:
+                    if must_come_after in positions:
+                        if positions[vertex] > positions[must_come_after]:
+                            return False
+        return True
+    
+    #create sorting method
+    def topological_sort_sequence(self, sequence):
+        sequence_set = set(sequence)
+        sub_graph = {n: {m for m in self.graph.get(n, set()) if m in sequence_set} 
+                     for n in sequence_set}
+        
+        # Calculate in-degrees for each node
+        in_degree = {n: 0 for n in sequence_set}
+        for n in sub_graph:
+            for m in sub_graph[n]:
+                in_degree[m] = in_degree.get(m, 0) + 1
+        
+        # Find nodes with no incoming edges
+        queue = [n for n in sequence_set if in_degree[n] == 0]
+        result = []
+        
+        # Process queue
+        while queue:
+            # Take node with no dependencies
+            n = queue.pop(0)
+            result.append(n)
+            
+            # Update in-degrees
+            for m in sub_graph.get(n, []):
+                in_degree[m] -= 1
+                if in_degree[m] == 0:
+                    queue.append(m)
+                    
+        return result
 
 
 r, s = parse_input('/Users/topherjaynes/Desktop/AdventCode/Day5/inputA.txt')
@@ -103,8 +145,39 @@ print(r,s)
 printer_dag = PrinterDAG()
 printer_dag.build_from_rules(r)
 
+'''
+#testing the class
 print("Rules loaded:", len(r))
 print("Sequences to check:", len(s))
 print("\nFirst few rules in the graph:")
 for vertex, edges in list(printer_dag.graph.items()):
     print(f"{vertex} must come before: {edges}")
+'''
+
+#solving
+valid_sequences = 0
+valid_middles = []
+
+incorrect_middles = []
+
+'''for idx, sequence in enumerate(s):
+        print(f"\nSequence {idx + 1}: {sequence}")
+        if printer_dag.is_valid_sequence(sequence):
+            valid_sequences += 1
+            middle = sequence[len(sequence) // 2]
+            valid_middles.append(middle)
+            print(f"✓ Valid! Middle number: {middle}")
+        else:
+            print("✗ Invalid sequence")
+
+print(f"\nTotal valid sequences: {valid_sequences}")
+print(f"Sum of middle numbers: {sum(valid_middles)}")'''
+for sequence in s:
+        if not printer_dag.is_valid_sequence(sequence):
+            # This is an incorrect sequence, let's reorder it
+            reordered = printer_dag.topological_sort_sequence(sequence)
+            middle = reordered[len(reordered) // 2]
+            incorrect_middles.append(middle)
+            print(f"Reordered {sequence} to {reordered} (middle: {middle})")
+    
+print(f"\nSum of middle numbers from reordered sequences: {sum(incorrect_middles)}")
